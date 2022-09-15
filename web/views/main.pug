@@ -1,0 +1,27 @@
+doctype
+html(lang='en')
+    head
+        meta(charset='utf-8')
+        title Hello
+        meta(name="socket-url" content=socketUrl)
+        meta(name="viewport" content="width=device-width, initial-scale=1")
+        link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css")
+        //- link(rel="stylesheet", href=`style.min.css?${time}`)
+        link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css")
+        script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js", defer) 
+        script(src=`${socketUrl}/socket.io/socket.io.js`, defer) 
+        script(src=`script.min.js?${time}`, defer) 
+    body.p-3 
+        div#server-list 
+        #fileUpload 
+            .form-group.mb-2
+                label ip
+                input.form-control#ip(type="text", name="ip")
+            .form-group.mb-2
+                label path
+                input.form-control#path(type="text", name="path")
+            .form-group.mb-2
+                label File Upload
+                input.form-control#file(type="file", name="file")
+                button.btn.btn-primary#btn-upload.mt-3 kirim
+        

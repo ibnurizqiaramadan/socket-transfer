@@ -1,0 +1,25 @@
+{
+  "name": "socket-transfer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "web/app.js",
+  "scripts": {
+    "dev:web": "nodemon web/app.js",
+    "dev:socket": "nodemon socket/socket.js"
+  },
+  "author": "xyrus10",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.0.2",
+    "express": "^4.18.1",
+    "fs": "^0.0.1-security",
+    "pug": "^3.0.2",
+    "socket.io": "^4.5.2",
+    "socket.io-client": "^4.5.2",
+    "to": "^0.2.9",
+    "update": "^0.7.4"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.19"
+  }
+}
