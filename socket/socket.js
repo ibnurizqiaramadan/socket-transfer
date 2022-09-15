@@ -1,7 +1,6 @@
 const express = require("express");
 const app = express();
 const server = require("http").Server(app);
-const fs = require("fs");
 const io = require("socket.io")(server, {
     cors: {
         origin: "*",
@@ -9,7 +8,6 @@ const io = require("socket.io")(server, {
     maxHttpBufferSize: 1e8,
 });
 const dotenv = require("dotenv");
-const { emit } = require("process");
 dotenv.config();
 const PORT = process.env.SOCKET_PORT;
 let serverList = [];
@@ -45,9 +43,12 @@ io.on("connection", (socket) => {
     });
 
     socket.on("upload", (data, callback) => {
-        console.log(data.metaData);
-        socket.to(data.metaData.ip).emit("upload", data);
-        console.log("upload");
+        const ips = data.metaData.ip.split(",");
+        ips.forEach((ip) => {
+            data.metaData.ip = ip;
+            console.log("upload", data.metaData);
+            socket.to(ip).emit("upload", data);
+        });
     });
 
     socket.on("uploaded", (data) => {
