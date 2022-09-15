@@ -6,22 +6,40 @@ html(lang='en')
         meta(name="socket-url" content=socketUrl)
         meta(name="viewport" content="width=device-width, initial-scale=1")
         link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css")
-        //- link(rel="stylesheet", href=`style.min.css?${time}`)
         link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css")
+        link(rel="stylesheet", href="style.css")
         script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js", defer) 
+        script(src="https://code.jquery.com/jquery-3.6.1.min.js", defer) 
         script(src=`${socketUrl}/socket.io/socket.io.js`, defer) 
-        script(src=`script.min.js?${time}`, defer) 
-    body.p-3 
-        div#server-list 
-        #fileUpload 
-            .form-group.mb-2
-                label ip
-                input.form-control#ip(type="text", name="ip")
-            .form-group.mb-2
-                label path
-                input.form-control#path(type="text", name="path")
-            .form-group.mb-2
-                label File Upload
-                input.form-control#file(type="file", name="file")
-                button.btn.btn-primary#btn-upload.mt-3 kirim
-        
+        script(src=`moment.min.js?${time}`, defer) 
+        script(src=`script.js?${time}`, defer) 
+    body.p-4
+        div#server-list.server-list.p-3.bordered.ms-4
+        #formContent.d-flex
+            #fileUpload.p-3.bordered.ms-3.w-100
+                .form-group.mb-2
+                    label.mb-2 ip
+                    input.form-control#ip(type="text", name="ip", value="", )
+                .form-group.mb-2
+                    label.mb-2 path source
+                    input.form-control#pathsrc(type="text", name="pathsrc", value="d:\\testsrc")
+                .form-group.mb-2
+                    label.mb-2 path destination
+                    input.form-control#path(type="text", name="path", value="d:\\testupload")
+                .form-group.mb-2
+                    label.mb-2 File Upload
+                    input.form-control#file(type="file", name="file", multiple=true)
+                    button.btn.btn-primary#btn-upload.mt-3 Upload
+            #fileDownload.p-3.bordered.ms-3.w-100
+                .form-group.mb-2
+                    label.mb-2 ip
+                    input.form-control#ip(type="text", name="ip", value="192.168.1.13")
+                .form-group.mb-2
+                    label.mb-2 path source
+                    input.form-control#pathsrc(type="text", name="pathsrc", value="d:\\testupload")
+                .form-group.mb-2
+                    label.mb-2 path destination
+                    input.form-control#path(type="text", name="path", value="d:\\testupload")
+                    button.btn.btn-primary#btn-upload.mt-3 Download
+        #consoleContent 
+            textarea.ms-3.mt-3.console#console(name="", cols="30", rows="15", readonly="true")
