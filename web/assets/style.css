@@ -1,0 +1,31 @@
+#server-list {
+    width: 200px !important;
+    position: fixed;
+    left: 0;
+}
+
+#formContent {
+    width: calc(100% - 200px) !important;
+    /* background-color: black; */
+    margin-left: 200px;
+}
+
+#consoleContent {
+    width: calc(100% - 200px) !important;
+    /* background-color: black; */
+    margin-left: 200px;
+}
+
+.console {
+    width: calc(100% - 16px) !important;
+}
+
+#console {
+    background-color: black;
+    color: rgb(27, 201, 36);
+    padding: 10px;
+}
+
+.bordered {
+    border: 1px solid black;
+}
