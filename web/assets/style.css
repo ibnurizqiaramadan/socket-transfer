@@ -1,31 +1,29 @@
 #server-list {
-    width: 200px !important;
+    width: 250px !important;
     position: fixed;
     left: 0;
+    -webkit-user-drag: none;
+    user-select: none;
 }
 
 #formContent {
-    width: calc(100% - 200px) !important;
+    width: calc(100% - 250px) !important;
     /* background-color: black; */
-    margin-left: 200px;
+    margin-left: 250px;
 }
 
 #consoleContent {
-    width: calc(100% - 200px) !important;
+    width: calc(100% - 250px) !important;
     /* background-color: black; */
-    margin-left: 200px;
+    margin-left: 250px;
 }
 
 .console {
-    width: calc(100% - 16px) !important;
-}
-
-#console {
+    width: calc(100%) !important;
     background-color: black;
     color: rgb(27, 201, 36);
-    padding: 10px;
 }
 
 .bordered {
-    border: 1px solid black;
+    /* border: 1px solid black; */
 }
