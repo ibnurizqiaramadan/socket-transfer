@@ -20,24 +20,55 @@ app.get("/", (req, res) => {
 });
 
 app.get("/upload-path", (req, res) => {
-    const files = fs
-        .readdirSync(req.query.src)
-        .filter(
-            (file) => fs.lstatSync(`${req.query.src}/${file}`).isFile() === true
-        );
+    let response = {};
+    try {
+        if (req.query.ip.trim() == "")
+            throw {
+                message: "bad request",
+            };
+        const files = fs
+            .readdirSync(req.query.src)
+            .filter(
+                (file) =>
+                    fs.lstatSync(`${req.query.src}/${file}`).isFile() === true
+            );
 
-    files.forEach((file) => {
-        let open = fs.readFileSync(`${req.query.src}/${file}`);
-        const metaData = {
-            name: file,
-            ip: req.query.ip,
-            path: req.query.des,
+        files.forEach((file) => {
+            let open = fs.readFileSync(`${req.query.src}/${file}`);
+            const metaData = {
+                name: file,
+                ip: req.query.ip,
+                path: req.query.des,
+            };
+            socket.emit("upload", { metaData: metaData, file: open });
+        });
+        response = {
+            files: files,
         };
-        socket.emit("upload", { metaData: metaData, file: open });
-    });
-    return res.send({
-        files: files,
-    });
+    } catch (error) {
+        response = {
+            error: error,
+            message: error.message,
+        };
+    } finally {
+        return res.send(response);
+    }
+});
+
+socket.on("receiveFile", (data) => {
+    // console.log(data.metaData);
+    // return;
+    const metaData = data.data.metaData;
+    fs.writeFile(
+        `${metaData.pathdes}/${metaData.fileName}`,
+        data.file,
+        function (err) {
+            if (err) {
+                return socket.emit("downloadFail", metaData);
+            }
+            socket.emit("downloaded", metaData);
+        }
+    );
 });
 
 app.listen(PORT, () => {
