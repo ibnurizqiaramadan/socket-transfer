@@ -2,44 +2,71 @@ doctype
 html(lang='en')
     head
         meta(charset='utf-8')
-        title Hello
+        title File Transfer Socket
         meta(name="socket-url" content=socketUrl)
         meta(name="viewport" content="width=device-width, initial-scale=1")
         link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css")
         link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css")
         link(rel="stylesheet", href="style.css")
+        link(rel="stylesheet", href="xterm.css")
         script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js", defer) 
         script(src="https://code.jquery.com/jquery-3.6.1.min.js", defer) 
         script(src=`${socketUrl}/socket.io/socket.io.js`, defer) 
-        script(src=`moment.min.js?${time}`, defer) 
+        script(src=`moment.min.js`, defer) 
+        script(src=`https://cdnjs.cloudflare.com/ajax/libs/xterm/3.14.5/xterm.min.js`, defer) 
         script(src=`script.js?${time}`, defer) 
     body.p-4
-        div#server-list.server-list.p-3.bordered.ms-4
-        #formContent.d-flex
-            #fileUpload.p-3.bordered.ms-3.w-100
-                .form-group.mb-2
-                    label.mb-2 ip
-                    input.form-control#ip(type="text", name="ip", value="", )
-                .form-group.mb-2
-                    label.mb-2 path source
-                    input.form-control#pathsrc(type="text", name="pathsrc", value="d:\\testsrc")
-                .form-group.mb-2
-                    label.mb-2 path destination
-                    input.form-control#path(type="text", name="path", value="d:\\testupload")
-                .form-group.mb-2
-                    label.mb-2 File Upload
-                    input.form-control#file(type="file", name="file", multiple=true)
-                    button.btn.btn-primary#btn-upload.mt-3 Upload
-            #fileDownload.p-3.bordered.ms-3.w-100
-                .form-group.mb-2
-                    label.mb-2 ip
-                    input.form-control#ip(type="text", name="ip", value="192.168.1.13")
-                .form-group.mb-2
-                    label.mb-2 path source
-                    input.form-control#pathsrc(type="text", name="pathsrc", value="d:\\testupload")
-                .form-group.mb-2
-                    label.mb-2 path destination
-                    input.form-control#path(type="text", name="path", value="d:\\testupload")
-                    button.btn.btn-primary#btn-upload.mt-3 Download
-        #consoleContent 
-            textarea.ms-3.mt-3.console#console(name="", cols="30", rows="15", readonly="true")
+        div#server-list.server-list.p-3.ms-4.rounded.border
+            p loading...
+        #formContent
+
+            ul.nav.nav-tabs#myTab(role="tablist").ms-3
+                li.nav-item(role="presentation")
+                    button.nav-link.active#ssh-tab(data-bs-toggle="tab", data-bs-target="#ssh", type="button" role="tab" aria-controls="ssh" aria-selected="true") SSH
+                li.nav-item(role="presentation")
+                    button.nav-link#upload-tab(data-bs-toggle="tab", data-bs-target="#upload", type="button" role="tab" aria-controls="download" aria-selected="true") Upload
+                li.nav-item(role="presentation")
+                    button.nav-link#download-tab(data-bs-toggle="tab", data-bs-target="#download", type="button" role="tab" aria-controls="upload" aria-selected="true") Download
+
+            .tab-content#myTabContent.border.ms-3.p-3
+                //- tab for upload //
+                .tab-pane.fade#upload(role="tabpanel", aria-labelledby="upload-tab") 
+                    #fileUpload.w-100.rounded
+                        .form-group.mb-2
+                            label.mb-2 ip
+                            input.form-control#ip(type="text", name="ip", value="", readonly)
+                        .form-group.mb-2
+                            label.mb-2 path source
+                            input.form-control#pathsrc(type="text", name="pathsrc", value="d:\\testsrc")
+                        .form-group.mb-2
+                            label.mb-2 path destination
+                            input.form-control#path(type="text", name="path", value="d:\\testupload")
+                            button.btn.btn-primary#btn-upload.mt-3 Upload
+                    textarea.mt-3.console#console-upload(name="", cols="30", rows="15", readonly="true").rounded
+                //- end tab for upload //
+                
+                //- tab for download //
+                .tab-pane.fade#download(role="tabpanel", aria-labelledby="download-tab") 
+                    #fileDownload.w-100.rounded
+                        .form-group.mb-2
+                            label.mb-2 ip
+                            input.form-control#ipd(type="text", name="ip", value="", readonly)
+                        .form-group.mb-2
+                            label.mb-2 path source
+                            input.form-control#pathsrcd(type="text", name="pathsrc", value="d:\\testupload")
+                        .form-group.mb-2
+                            label.mb-2 path destination
+                            input.form-control#pathd(type="text", name="path", value="d:\\testupload")
+                            button.btn.btn-primary#btn-download.mt-3 Download
+                    textarea.mt-3.console#console-download(name="", cols="30", rows="15", readonly="true").rounded
+                //- end tab for download //
+
+                //- tab for ssh //
+                .tab-pane.show.active.fade#ssh(role="tabpanel", aria-labelledby="ssh-tab")
+                    .form-group.mb-2
+                        label.mb-2 ip
+                        input.form-control#ipssh(type="text", name="ip", value="", readonly)
+                    #terminal.w-100.mt-3
+                    
+
+                //- end tab for ssh //
