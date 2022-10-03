@@ -5,7 +5,8 @@
   "main": "web/app.js",
   "scripts": {
     "dev:web": "nodemon web/app.js",
-    "dev:socket": "nodemon socket/socket.js"
+    "dev:socket": "nodemon socket/socket.js",
+    "dev:server": "nodemon server/app.py"
   },
   "author": "xyrus10",
   "license": "ISC",
