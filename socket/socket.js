@@ -13,18 +13,19 @@ const PORT = process.env.SOCKET_PORT;
 let serverList = [];
 
 app.get("/", (req, res) => {
-    res.send(":)");
+    res.send("Socket ready");
 });
 
 io.on("connection", (socket) => {
     let id = socket.id;
     console.log("user connected", id);
+    io.to(id).emit("connected", id)
+    // socket.join(id);
     socket.on("join", (serverIp) => {
         serverList.push({
             id: id,
             ip: serverIp,
         });
-        console.log(serverList);
         socket.join(serverIp);
         console.log(`user ${socket.id} join room ${serverIp}`);
         io.emit("device-connected", { id: socket.id, ip: serverIp });
@@ -42,21 +43,48 @@ io.on("connection", (socket) => {
         });
     });
 
-    socket.on("upload", (data, callback) => {
+    socket.on("upload", async (data) => {
         const ips = data.metaData.ip.split(",");
+        const fileee = await data.file;
         ips.forEach((ip) => {
             data.metaData.ip = ip;
-            console.log("upload", data.metaData);
+            data.sender = id;
             socket.to(ip).emit("upload", data);
         });
     });
 
+    socket.on("download", async (data) => {
+        data.sender = id;
+        socket.to(data.metaData.ip).emit("download", data);
+    });
+
     socket.on("uploaded", (data) => {
-        io.emit("uploadSuccess", data);
+        data.sender = id;
+        console.log(data.sender, "uploaded");
+        io.to(data.sender).emit("uploadSuccess", data);
     });
 
     socket.on("uploadFail", (data) => {
-        io.emit("uploadFailed", data);
+        console.log(data.sender, "fail");
+        io.to(data.sender).emit("uploadFailed", data);
+    });
+
+    socket.on("downloaded", (data) => {
+        console.log(data.sender, "downloaded");
+        io.to(data.sender).emit("downloadSuccess", data);
+    });
+
+    socket.on("downloadFail", (data) => {
+        console.log(data.sender, "fail");
+        io.to(data.sender).emit("downloadFailed", data);
+    });
+
+    socket.on("fileCountDownload", (data) => {
+        io.to(data.sender).emit("getFileCountDownload", data);
+    });
+
+    socket.on("sendFile", (data) => {
+        io.emit("receiveFile", data);
     });
 
     socket.on("disconnect", (socket) => {
@@ -76,6 +104,29 @@ io.on("connection", (socket) => {
     socket.on("getAllRooms", () => {
         socket.emit("sendAllRooms", serverList);
     });
+
+    socket.on("sshCommand", (data) => {
+        data.sender = id;
+        socket.to(data.ip).emit("runSshCommand", data);
+    });
+
+    socket.on("sshCommandResult", (data) => {
+        console.log(data.sender);
+        io.to(data.sender).emit("sshCommandGetResult", data);
+    });
+
+    socket.on("sshCommandDone", (data) => {
+        console.log(data.sender);
+        io.to(data.sender).emit("sshCommandFinish", data);
+    });
+
+    socket.on("watcherCreateDirectory", data => {
+        io.emit("serverCreateDirectory", data)
+    })
+
+    socket.on("watcherSendFile", data => {
+        io.emit("serverSendFile", data)
+    })
 });
 
 server.listen(PORT, () => {
