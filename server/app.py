@@ -1,12 +1,10 @@
 from cmath import log
-from distutils.log import error
-from fileinput import filename
+from pathlib import Path
 import socketio
 import os
 import platform
 from datetime import datetime
 from dotenv import load_dotenv
-from os.path import exists
 
 load_dotenv()
 
@@ -28,28 +26,6 @@ def connect():
 def ping(data):
     if data['ip'] == DEVICE_IP:
         sio.emit('pong', {"ip": DEVICE_IP, "pingTime": data["time"]})
-
-
-@sio.event
-def upload1(data):
-    metaData = data["metaData"]
-    # print(metaData)
-    fileName = f"{metaData['path']}{separator}{metaData['name']}"
-    file = open(fileName, "wb")
-    file.write(data["file"])
-    file.close()
-    file_exists = exists(fileName)
-    if (file_exists):
-        response = {
-            "status": "uploaded",
-            "data": {"fileName": fileName, "ip": metaData["ip"]}
-        }
-    else:
-        response = {
-            "status": "uploadFail",
-            "data": {"fileName": fileName, "ip": metaData["ip"]}
-        }
-    print(response)
 
 
 @sio.event
@@ -80,13 +56,72 @@ def upload(data):
             "message": "Permission Error"
         }
     finally:
+        response["sender"] = data["sender"]
         print(response)
         sio.emit(response["status"], response)
+
+
+@sio.event
+def download(data):
+    try:
+        metaData = data["metaData"]
+        files = os.listdir(metaData["pathsrc"])
+        filesCollection = []
+        for file in files:
+            filePath = f"{metaData['pathsrc']}{separator}{file}"
+            if os.path.isfile(filePath):
+                filesCollection.append(file)
+
+        sio.emit("fileCountDownload", {
+                 "metaData": metaData, "count": len(filesCollection)})
+
+        for file in filesCollection:
+            filePath = f"{metaData['pathsrc']}{separator}{file}"
+            bufferFile = open(filePath, "rb")
+            byte = bufferFile.read()
+            bufferFile.close()
+            data["metaData"]["fileName"] = file
+            data["metaData"]["filePath"] = filePath = f"{metaData['pathdes']}{separator}{file}"
+            sio.emit("sendFile", {"data": data, "file": byte, })
+    except:
+        print("hello")
+
+    finally:
+        sio.emit("hello")
+
+
+@sio.event
+def runSshCommand(data):
+    output_stream = os.popen(data["command"])
+    for line in output_stream:
+        sio.emit("sshCommandResult", {
+                 "command": data["command"], "result": line, "sender": data["sender"]})
+    sio.emit("sshCommandDone", {
+             "command": data["command"], "sender": data["sender"]})
 
 
 @ sio.event
 def disconnect():
     print('disconnected from server')
+
+
+@sio.event
+def serverCreateDirectory(data):
+    dir_ = data["dir"]
+    path_ = data["path"]
+    check = f"{path_}{separator}{dir_}"
+    checkPath = Path(check)
+    if checkPath.exists() == False:
+        os.makedirs(checkPath)
+
+
+@sio.event
+def serverSendFile(data):
+    path = data["des"]
+    fileName = f"{path}{separator}{data['name']}"
+    file = open(fileName, "wb")
+    file.write(data["file"])
+    file.close()
 
 
 sio.connect(SOCKET_URL)
